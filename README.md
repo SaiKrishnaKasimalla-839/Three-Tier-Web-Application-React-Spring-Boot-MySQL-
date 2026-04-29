@@ -1,4 +1,3 @@
-# Three-Tier-Web-Application-React-Spring-Boot-MySQL-
 
 
 # 🚀 Three-Tier Web Application (React + Spring Boot + MySQL)
