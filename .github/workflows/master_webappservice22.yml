@@ -19,9 +19,11 @@ jobs:
           node-version: '18.x'
 
       - name: Install dependencies
+        working-directory: threetierfrontend
         run: npm install
 
       - name: Build project
+        working-directory: threetierfrontend
         run: npm run build
 
       - name: Deploy to Azure Web App
@@ -29,4 +31,4 @@ jobs:
         with:
           app-name: WebAppService22
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: build
+          package: threetierfrontend/build
