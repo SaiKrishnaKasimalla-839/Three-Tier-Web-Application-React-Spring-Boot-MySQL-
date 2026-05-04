@@ -671,83 +671,144 @@ function SignIn({onSignIn,onGoSignUp,onGoHome}){
   );
 }
 
-/* ── SIGN UP ── */
-function SignUp({onGoSignIn,onSignUp,onGoHome}){
-  const [form,setForm]=useState({firstName:"",lastName:"",email:"",mobile:"",github:"",password:""});
-  const [err,setErr]=useState("");
-  const [ok,setOk]=useState("");
-  const [busy,setBusy]=useState(false);
-  const set=e=>setForm(p=>({...p,[e.target.name]:e.target.value}));
 
-  const handle=async()=>{
-    setErr(""); setOk("");
-    if(Object.values(form).some(v=>!v.trim())) return setErr("All fields are required.");
-    if(!/\S+@\S+\.\S+/.test(form.email)) return setErr("Enter a valid email address.");
-    if(!/^\+?\d{7,15}$/.test(form.mobile.replace(/\s/g,""))) return setErr("Enter a valid mobile number (digits only).");
-    if(form.password.length<8) return setErr("Password must be at least 8 characters.");
+
+/* ── SIGN UP ── */
+function SignUp({ onGoSignIn, onSignUp, onGoHome }) {
+
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    mobile: "",
+    github: "",
+    password: ""
+  });
+
+  const [err, setErr] = useState("");
+  const [ok, setOk] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const set = (e) => {
+    setForm(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  /* 🔥 FIXED HANDLE FUNCTION */
+  const handle = async (e) => {
+    if (e) e.preventDefault();
+
+    setErr("");
+    setOk("");
+
+    // validation
+    if (Object.values(form).some(v => !v.trim()))
+      return setErr("All fields are required.");
+
+    if (!/\S+@\S+\.\S+/.test(form.email))
+      return setErr("Enter a valid email address.");
+
+    if (!/^\+?\d{7,15}$/.test(form.mobile.replace(/\s/g, "")))
+      return setErr("Enter a valid mobile number.");
+
+    if (form.password.length < 8)
+      return setErr("Password must be at least 8 characters.");
+
     setBusy(true);
-    try{
-      const res=await fetch("https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/signup",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({username:form.email,password:form.password})
-      });
-      const data=await res.text();
-      if(!res.ok){ setBusy(false); return setErr(data||"Signup failed. Please try again."); }
-      /* ✅ SUCCESS — store session and redirect to dashboard */
-      setOk("Account created! Taking you to your dashboard…");
-      const userObj={
-        firstName:form.firstName.trim(),
-        lastName:form.lastName.trim(),
-        email:form.email.trim().toLowerCase(),
-        mobile:form.mobile.trim(),
-        github:form.github.trim(),
-        token:data
+
+    try {
+      const res = await fetch(
+        "https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: form.email,   // 🔥 mapping
+            password: form.password
+          }),
+        }
+      );
+
+      const data = await res.text();
+
+      console.log("STATUS:", res.status);
+      console.log("RESPONSE:", data);
+
+      if (!res.ok) {
+        setBusy(false);
+        return setErr(data || "Signup failed.");
+      }
+
+      // success
+      setOk("Account created successfully 🚀");
+
+      const userObj = {
+        firstName: form.firstName.trim(),
+        lastName: form.lastName.trim(),
+        email: form.email.trim().toLowerCase(),
+        mobile: form.mobile.trim(),
+        github: form.github.trim(),
+        token: data
       };
-      sessionStorage.setItem("no_session",JSON.stringify(userObj));
+
+      sessionStorage.setItem("no_session", JSON.stringify(userObj));
+
       setBusy(false);
-      setTimeout(()=>onSignUp(userObj),900);
-    }catch(e){
+
+      setTimeout(() => onSignUp(userObj), 800);
+
+    } catch (error) {
+      console.error("FETCH ERROR:", error);
       setBusy(false);
-      setErr("Cannot reach server. Please check your connection. ❌");
+      setErr("Cannot reach server ❌");
     }
   };
-  return(
-    <div style={{minHeight:"100vh",position:"relative",zIndex:1,display:"flex",flexDirection:"column"}}>
-      <div className="auth-topbar"><div style={{cursor:"pointer"}} onClick={onGoHome}><LogoMark sz={30} fs={15}/></div></div>
-      <div className="auth-page" style={{flex:1}}>
-        <div className="auth-left">
-          <h2 className="auth-left-h">Build your first<br/>AI agent today</h2>
-          <p className="auth-left-sub">No credit card required. Get up and running with 2 free agents and 5,000 runs per month — forever.</p>
-          <div className="proof-list">
-            {[{i:"🚀",t:"Deploy your first agent in under 5 minutes"},{i:"🆓",t:"Free tier — no credit card required"},{i:"🌍",t:"12,000+ teams already onboard"}].map((p,k)=>(
-              <div className="proof-item" key={k}><div className="proof-icon">{p.i}</div><span>{p.t}</span></div>
-            ))}
-          </div>
-        </div>
-        <div className="auth-right" style={{width:520}}>
-          <div className="auth-card">
-            <div className="auth-title">Create your account</div>
-            <div className="auth-sub2">Already have one? <button onClick={onGoSignIn}>Sign in</button></div>
-            {err&&<div className="err-msg">⚠ {err}</div>}
-            {ok&&<div className="ok-msg">✓ {ok}</div>}
-            <div className="form-row2">
-              <Field label="First Name" icon="👤" name="firstName" value={form.firstName} onChange={set} placeholder="Ada"/>
-              <Field label="Last Name" icon="👤" name="lastName" value={form.lastName} onChange={set} placeholder="Lovelace"/>
-            </div>
-            <Field label="Email Address" icon="✉️" type="email" name="email" value={form.email} onChange={set} placeholder="you@company.com"/>
-            <Field label="Mobile Number" icon="📱" type="tel" name="mobile" value={form.mobile} onChange={set} placeholder="+1 555 000 0000"/>
-            <Field label="GitHub Username" icon="🐙" name="github" value={form.github} onChange={set} placeholder="octocat"/>
-            <Field label="Password" icon="🔒" type="password" name="password" value={form.password} onChange={set} placeholder="Min 8 characters"/>
-            <button className="btn-auth" onClick={handle}>Create Account →</button>
-            <div className="auth-footer">By signing up you agree to our <button>Terms</button> & <button>Privacy Policy</button></div>
-          </div>
+
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+
+      <div style={{ cursor: "pointer" }} onClick={onGoHome}>
+        <h3>Logo</h3>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
+
+        <div style={{ width: "500px" }}>
+
+          <h2>Create your account</h2>
+          <p>Already have one? <button onClick={onGoSignIn}>Sign in</button></p>
+
+          {err && <div style={{ color: "red" }}>⚠ {err}</div>}
+          {ok && <div style={{ color: "green" }}>✓ {ok}</div>}
+
+          <input name="firstName" placeholder="First Name" value={form.firstName} onChange={set} />
+          <input name="lastName" placeholder="Last Name" value={form.lastName} onChange={set} />
+          <input name="email" placeholder="Email" value={form.email} onChange={set} />
+          <input name="mobile" placeholder="Mobile" value={form.mobile} onChange={set} />
+          <input name="github" placeholder="GitHub Username" value={form.github} onChange={set} />
+          <input type="password" name="password" placeholder="Password" value={form.password} onChange={set} />
+
+          {/* 🔥 UPDATED BUTTON */}
+          <button
+            onClick={handle}
+            type="button"
+            disabled={busy}
+            style={{ marginTop: "20px" }}
+          >
+            {busy ? "Creating..." : "Create Account →"}
+          </button>
+
         </div>
       </div>
     </div>
   );
 }
 
+export default SignUp;
 /* ── DASHBOARD PAGES ── */
 function AgentCard({a}){
   return(
