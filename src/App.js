@@ -673,140 +673,153 @@ function SignIn({onSignIn,onGoSignUp,onGoHome}){
 
 
 
-/* ── SIGN UP ── */
-function SignUp({ onGoSignIn, onSignUp, onGoHome }) {
+// /* ── SIGN UP ── */
+// function SignUp({ onGoSignIn, onSignUp, onGoHome }) {
 
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    mobile: "",
-    github: "",
-    password: ""
-  });
+//   const [form, setForm] = useState({
+//     firstName: "",
+//     lastName: "",
+//     email: "",
+//     mobile: "",
+//     github: "",
+//     password: ""
+//   });
 
-  const [err, setErr] = useState("");
-  const [ok, setOk] = useState("");
-  const [busy, setBusy] = useState(false);
+//   const [err, setErr] = useState("");
+//   const [ok, setOk] = useState("");
+//   const [busy, setBusy] = useState(false);
 
-  const set = (e) => {
-    setForm(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+//   const set = (e) => {
+//     setForm(prev => ({
+//       ...prev,
+//       [e.target.name]: e.target.value
+//     }));
+//   };
 
-  /* 🔥 FIXED HANDLE FUNCTION */
-  const handle = async (e) => {
-    if (e) e.preventDefault();
+//   /* 🔥 FIXED HANDLE FUNCTION */
+//   const handle = async (e) => {
+//     if (e) e.preventDefault();
 
-    setErr("");
-    setOk("");
+//     setErr("");
+//     setOk("");
 
-    // validation
-    if (Object.values(form).some(v => !v.trim()))
-      return setErr("All fields are required.");
+//     // validation
+//     if (Object.values(form).some(v => !v.trim()))
+//       return setErr("All fields are required.");
 
-    if (!/\S+@\S+\.\S+/.test(form.email))
-      return setErr("Enter a valid email address.");
+//     if (!/\S+@\S+\.\S+/.test(form.email))
+//       return setErr("Enter a valid email address.");
 
-    if (!/^\+?\d{7,15}$/.test(form.mobile.replace(/\s/g, "")))
-      return setErr("Enter a valid mobile number.");
+//     if (!/^\+?\d{7,15}$/.test(form.mobile.replace(/\s/g, "")))
+//       return setErr("Enter a valid mobile number.");
 
-    if (form.password.length < 8)
-      return setErr("Password must be at least 8 characters.");
+//     if (form.password.length < 8)
+//       return setErr("Password must be at least 8 characters.");
 
-    setBusy(true);
+//     setBusy(true);
 
-    try {
-      const res = await fetch(
-        "https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/signup",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: form.email,   // 🔥 mapping
-            password: form.password
-          }),
-        }
-      );
+//     try {
+//       const res = await fetch(
+//         "https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/signup",
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             username: form.email,   // 🔥 mapping
+//             password: form.password
+//           }),
+//         }
+//       );
 
-      const data = await res.text();
+//       const data = await res.text();
 
-      console.log("STATUS:", res.status);
-      console.log("RESPONSE:", data);
+//       console.log("STATUS:", res.status);
+//       console.log("RESPONSE:", data);
 
-      if (!res.ok) {
-        setBusy(false);
-        return setErr(data || "Signup failed.");
-      }
+//       if (!res.ok) {
+//         setBusy(false);
+//         return setErr(data || "Signup failed.");
+//       }
 
-      // success
-      setOk("Account created successfully 🚀");
+//       // success
+//       setOk("Account created successfully 🚀");
 
-      const userObj = {
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        email: form.email.trim().toLowerCase(),
-        mobile: form.mobile.trim(),
-        github: form.github.trim(),
-        token: data
-      };
+//       const userObj = {
+//         firstName: form.firstName.trim(),
+//         lastName: form.lastName.trim(),
+//         email: form.email.trim().toLowerCase(),
+//         mobile: form.mobile.trim(),
+//         github: form.github.trim(),
+//         token: data
+//       };
 
-      sessionStorage.setItem("no_session", JSON.stringify(userObj));
+//       sessionStorage.setItem("no_session", JSON.stringify(userObj));
 
-      setBusy(false);
+//       setBusy(false);
 
-      setTimeout(() => onSignUp(userObj), 800);
+//       setTimeout(() => onSignUp(userObj), 800);
 
-    } catch (error) {
-      console.error("FETCH ERROR:", error);
-      setBusy(false);
-      setErr("Cannot reach server ❌");
-    }
-  };
+//     } catch (error) {
+//       console.error("FETCH ERROR:", error);
+//       setBusy(false);
+//       setErr("Cannot reach server ❌");
+//     }
+//   };
 
-  return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+//   return (
+//     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
 
-      <div style={{ cursor: "pointer" }} onClick={onGoHome}>
-        <h3>Logo</h3>
-      </div>
+//       <div style={{ cursor: "pointer" }} onClick={onGoHome}>
+//         <h3>Logo</h3>
+//       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
+//       <div style={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
 
-        <div style={{ width: "500px" }}>
+//         <div style={{ width: "500px" }}>
 
-          <h2>Create your account</h2>
-          <p>Already have one? <button onClick={onGoSignIn}>Sign in</button></p>
+//           <h2>Create your account</h2>
+//           <p>Already have one? <button onClick={onGoSignIn}>Sign in</button></p>
 
-          {err && <div style={{ color: "red" }}>⚠ {err}</div>}
-          {ok && <div style={{ color: "green" }}>✓ {ok}</div>}
+//           {err && <div style={{ color: "red" }}>⚠ {err}</div>}
+//           {ok && <div style={{ color: "green" }}>✓ {ok}</div>}
 
-          <input name="firstName" placeholder="First Name" value={form.firstName} onChange={set} />
-          <input name="lastName" placeholder="Last Name" value={form.lastName} onChange={set} />
-          <input name="email" placeholder="Email" value={form.email} onChange={set} />
-          <input name="mobile" placeholder="Mobile" value={form.mobile} onChange={set} />
-          <input name="github" placeholder="GitHub Username" value={form.github} onChange={set} />
-          <input type="password" name="password" placeholder="Password" value={form.password} onChange={set} />
+//           <input name="firstName" placeholder="First Name" value={form.firstName} onChange={set} />
+//           <input name="lastName" placeholder="Last Name" value={form.lastName} onChange={set} />
+//           <input name="email" placeholder="Email" value={form.email} onChange={set} />
+//           <input name="mobile" placeholder="Mobile" value={form.mobile} onChange={set} />
+//           <input name="github" placeholder="GitHub Username" value={form.github} onChange={set} />
+//           <input type="password" name="password" placeholder="Password" value={form.password} onChange={set} />
 
-          {/* 🔥 UPDATED BUTTON */}
-          <button
-            onClick={handle}
-            type="button"
-            disabled={busy}
-            style={{ marginTop: "20px" }}
-          >
-            {busy ? "Creating..." : "Create Account →"}
-          </button>
+//           {/* 🔥 UPDATED BUTTON */}
+//           <button
+//             onClick={handle}
+//             type="button"
+//             disabled={busy}
+//             style={{ marginTop: "20px" }}
+//           >
+//             {busy ? "Creating..." : "Create Account →"}
+//           </button>
 
-        </div>
-      </div>
-    </div>
-  );
-}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+const res = await fetch(
+  "https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/signup",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username: form.email,
+      password: form.password
+    })
+  }
+);
 
 export default SignUp;
 /* ── DASHBOARD PAGES ── */
