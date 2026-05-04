@@ -612,7 +612,7 @@ function SignIn({onSignIn,onGoSignUp,onGoHome}){
     if(!form.email||!form.password) return setErr("Please fill in all fields.");
     setBusy(true);
     try{
-      const res=await fetch("http://20.164.2.140:8080/api/login",{
+      const res=await fetch("https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/login",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({username:form.email,password:form.password})
@@ -687,7 +687,7 @@ function SignUp({onGoSignIn,onSignUp,onGoHome}){
     if(form.password.length<8) return setErr("Password must be at least 8 characters.");
     setBusy(true);
     try{
-      const res=await fetch("http://20.164.2.140:8080/api/signup",{
+      const res=await fetch("https://backendserver22-f7eaf3hyhbgpbjh2.canadacentral-01.azurewebsites.net/api/signup",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({username:form.email,password:form.password})
